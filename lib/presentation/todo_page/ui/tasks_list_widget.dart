@@ -5,6 +5,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../../../domain/model/todo.dart';
+import '../../../utils/date_time_util.dart';
 
 class TasksListWidget extends StatefulWidget {
   const TasksListWidget({super.key});
@@ -14,6 +15,8 @@ class TasksListWidget extends StatefulWidget {
 }
 
 class _TasksListWidgetState extends State<TasksListWidget> {
+  DateTime currentDay = DateTime.now();
+
   void showAddTodoBox() {
     final todoCubit = context.read<TodoCubit>();
     final textController = TextEditingController();
@@ -64,6 +67,24 @@ class _TasksListWidgetState extends State<TasksListWidget> {
     );
   }
 
+  Future<void> _selectDate(BuildContext context) async {
+    final todoCubit = context.read<TodoCubit>();
+
+    final DateTime? pickedDate = await showDatePicker(
+      context: context,
+      initialDate: currentDay,
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2100),
+    );
+
+    if (pickedDate != null) {
+      todoCubit.loadTodosByDay(day: pickedDate);
+      setState(() {
+        currentDay = pickedDate;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -77,15 +98,24 @@ class _TasksListWidgetState extends State<TasksListWidget> {
             children: [
               SvgPicture.asset('assets/images/svg/clock.svg'),
               Container(
-                margin: const EdgeInsets.only(top: 18, bottom: 12),
+                margin: const EdgeInsets.only(top: 18, bottom: 8),
                 width: double.infinity,
-                child: Text(
-                  'Task List',
-                  style: GoogleFonts.poppins(
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black,
-                      fontSize: 22),
-                  textAlign: TextAlign.start,
+                child: Row(
+                  children: [
+                    Text(
+                      'Task List',
+                      style: GoogleFonts.poppins(
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black,
+                          fontSize: 22),
+                      textAlign: TextAlign.start,
+                    ),
+                    const Spacer(),
+                    IconButton(
+                      icon: const Icon(Icons.calendar_month_rounded, size: 24),
+                      onPressed: () => _selectDate(context),
+                    ),
+                  ],
                 ),
               ),
               Expanded(
@@ -113,7 +143,7 @@ class _TasksListWidgetState extends State<TasksListWidget> {
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Text(
-                                  'Daily Tasks',
+                                  DateTimeUtil.formatDateTime(currentDay),
                                   style: GoogleFonts.poppins(
                                     fontWeight: FontWeight.bold,
                                     color: Colors.black,
@@ -133,9 +163,10 @@ class _TasksListWidgetState extends State<TasksListWidget> {
                           Expanded(
                             child: todos.isEmpty
                                 ? Center(
-                                    child: Text('Today has no task!',
-                                        style:
-                                            GoogleFonts.poppins(fontSize: 20)),
+                                    child: Text(
+                                      'Nothing to show',
+                                      style: GoogleFonts.poppins(fontSize: 20),
+                                    ),
                                   )
                                 : ListView.builder(
                                     padding: const EdgeInsets.only(
@@ -145,7 +176,9 @@ class _TasksListWidgetState extends State<TasksListWidget> {
                                       final todo = todos[index];
 
                                       return Dismissible(
-                                        key: Key(todo.id.toString()),
+                                        key: Key(
+                                          todo.id.toString(),
+                                        ),
                                         direction: DismissDirection.endToStart,
                                         background: Container(
                                           alignment: Alignment.centerRight,
@@ -156,7 +189,6 @@ class _TasksListWidgetState extends State<TasksListWidget> {
                                               color: Colors.white),
                                         ),
                                         onDismissed: (direction) {
-                                          // Call to delete item
                                           context
                                               .read<TodoCubit>()
                                               .deleteTodo(todo: todo);
