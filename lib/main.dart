@@ -1,27 +1,34 @@
-import 'package:daily_task/data/model/isar_todo.dart';
-import 'package:daily_task/data/repository/isar_todo_repo.dart';
-import 'package:daily_task/domain/repository/todo_repo.dart';
+import 'package:daily_task/di/service_locator.dart';
 import 'package:daily_task/presentation/splash/ui/splash_page.dart';
+import 'package:daily_task/presentation/todo_page/ui/todo_page.dart';
 import 'package:flutter/material.dart';
-import 'package:isar/isar.dart';
-import 'package:path_provider/path_provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  final dir = await getApplicationDocumentsDirectory();
+  await setupLocator();
 
-  final isar = await Isar.open([TodoIsarSchema], directory: dir.path);
+  final isFirstLaunch = await checkFirstLaunch();
 
-  final isarTodoRepo = IsarTodoRepo(isar);
+  runApp(MyApp(isFirstLaunch: isFirstLaunch));
+}
 
-  runApp(MyApp(todoRepo: isarTodoRepo));
+Future<bool> checkFirstLaunch() async {
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  bool isFirstLaunch = prefs.getBool('isFirstLaunch') ?? true;
+
+  if (isFirstLaunch) {
+    await prefs.setBool('isFirstLaunch', false);
+  }
+
+  return isFirstLaunch;
 }
 
 class MyApp extends StatelessWidget {
-  final TodoRepo todoRepo;
+  final bool isFirstLaunch;
 
-  const MyApp({super.key, required this.todoRepo});
+  const MyApp({super.key, required this.isFirstLaunch});
 
   @override
   Widget build(BuildContext context) {
@@ -31,7 +38,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: SplashPage(todoRepo: todoRepo),
+      home: isFirstLaunch ? const SplashPage() : const TodoPage(),
     );
   }
 }

@@ -1,4 +1,3 @@
-import 'package:daily_task/domain/repository/todo_repo.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -6,9 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../todo_page/ui/todo_page.dart';
 
 class SplashPage extends StatelessWidget {
-  final TodoRepo todoRepo;
-
-  const SplashPage({super.key, required this.todoRepo});
+  const SplashPage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -62,9 +59,9 @@ class SplashPage extends StatelessWidget {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => TodoPage(todoRepo: todoRepo),
+                      builder: (context) => const TodoPage(),
                     ),
-                  );;
+                  );
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF62D2C3),
