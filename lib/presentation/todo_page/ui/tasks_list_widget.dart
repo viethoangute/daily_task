@@ -50,10 +50,9 @@ class _TasksListWidgetState extends State<TasksListWidget> {
           TextButton(
             onPressed: () {
               if (textController.text.isNotEmpty) {
-                DateTime now = DateTime.now();
                 todoCubit.addTodo(
                     text: textController.text,
-                    day: DateTime(now.year, now.month, now.day));
+                    day: DateTime(currentDay.year, currentDay.month, currentDay.day));
                 Navigator.of(context).pop();
               }
             },
