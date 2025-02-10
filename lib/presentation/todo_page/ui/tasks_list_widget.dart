@@ -88,6 +88,7 @@ class _TasksListWidgetState extends State<TasksListWidget> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
         backgroundColor: const Color(0xFFEEEEEE),
         body: Container(
           margin:

@@ -3,6 +3,7 @@ class Assets {
   Assets._();
 
   static const String pngAvt = 'assets/images/png/avt.png';
+  static const String pngDefaultAvt = 'assets/images/png/default_avt.png';
   static const String svgClock = 'assets/images/svg/clock.svg';
   static const String svgCloud = 'assets/images/svg/cloud.svg';
   static const String svgCloudLight = 'assets/images/svg/cloud_light.svg';

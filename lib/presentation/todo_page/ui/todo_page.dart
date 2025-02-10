@@ -6,6 +6,8 @@ import 'package:daily_task/presentation/todo_page/ui/tasks_list_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../cubit/header_cubit.dart';
+
 class TodoPage extends StatefulWidget {
   const TodoPage({super.key});
 
@@ -16,9 +18,13 @@ class TodoPage extends StatefulWidget {
 class _TodoPageState extends State<TodoPage> {
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => TodoCubit(getIt<TodoRepo>()),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(create: (_) => HeaderCubit()),
+        BlocProvider(create: (_) => TodoCubit(getIt<TodoRepo>())),
+      ],
       child: const Scaffold(
+        resizeToAvoidBottomInset: false,
         backgroundColor: Color(0xFFEEEEEE),
         body: Column(
           children: [
